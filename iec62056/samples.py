@@ -286,3 +286,4 @@ AIDON_7534 = (
 	b'!A9D6\r\n'
 )
 ALL.append(('AIDON_7534', AIDON_7534))
+ALL_DICT = dict(ALL)
