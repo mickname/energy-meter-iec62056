@@ -4,15 +4,16 @@ import iec62056.objects
 import iec62056.parser
 import iec62056.samples
 
+samples = iec62056.samples.Samples()
 
 @pytest.fixture
 def parser():
     return iec62056.parser.Parser()
 
 
-@pytest.mark.parametrize('sample_name', iec62056.samples.ALL_DICT.keys())
+@pytest.mark.parametrize('sample_name', list(samples))
 def test_sample_parses_succesfully(parser, sample_name):
-    data = iec62056.samples.ALL_DICT[sample_name]
+    data = samples[sample_name]
     telegram = parser.parse(data.decode('ascii'))
     for k in telegram.keys():
         obj = telegram[k]
