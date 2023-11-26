@@ -7,7 +7,7 @@ class Samples(Mapping):
     """Load sample data bytes from various devices.
     """
     def __init__(self) -> None:
-        self.sample_names: set[str] = set(sample.stem for sample in SAMPLE_DIR.glob('*.raw'))
+        self.sample_names: set[str] = set(sample.stem for sample in SAMPLE_DIR.glob('*.txt'))
         self.sample_data: dict[str, bytes] = {}
 
     def __getitem__(self, sample_name: str) -> bytes:
@@ -17,8 +17,13 @@ class Samples(Mapping):
             if sample_name not in self.sample_names:
                 raise ValueError(f'Invalid sample name {sample_name}')
 
-            with open(SAMPLE_DIR / pathlib.Path(sample_name).with_suffix('.raw'), 'rb') as f:
-                data = f.read()
+            with open(SAMPLE_DIR / pathlib.Path(sample_name).with_suffix('.txt'), 'rb') as f:
+                # Read sample data. Data is backslash escaped lines, where normal
+                # unescaped line changes are stripped.
+                data = b''.join(
+                    line.removesuffix(b'\n').decode('unicode_escape').encode('utf-8')
+                    for line in f.readlines()
+                )
 
             self.sample_data[sample_name] = data
             return data
