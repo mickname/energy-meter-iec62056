@@ -1,5 +1,4 @@
-import datetime
-import time
+from datetime import datetime
 
 class Reference(object):
     def __init__(self, i):
@@ -93,13 +92,15 @@ class Telegram(object):
                 return o
         raise ValueError('key "{}" not in telegram'.format(name))
 
-def timestamp(raw):
-    # cosem timestamp format = YYMMDDhhmmssX
-    # we ditch the dst flag (S, summer, dst=True, W, winter, dst=False)
-    # since we strptime according to local timezone
-    dt = datetime.datetime.strptime(raw[:12], '%y%m%d%H%M%S')
-    zone = datetime.datetime.now(datetime.timezone.utc).astimezone()
-    return dt.replace(tzinfo=zone.tzinfo)
+def timestamp(raw: str) -> datetime:
+    """Return a naive datetime object from the meter timestamp field. The field
+    is in format YYMMDDhhmmssX, where X is S or W for summer/winter time.
+    However, the timestamp is always in normal time (fixed utc offset).
+    Therefore, just ignore the S/W flag and return the naive datetime for the
+    user to handle.
+    """
+    return datetime.strptime(raw[:12], '%y%m%d%H%M%S')
+
 
 cosem_objects = [
 # These are from various DSMR specs
